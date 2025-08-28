@@ -1,299 +1,664 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" class="h-full">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ethik- und Werte-Kompass</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-            color: #1f2937;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ethik- & Werte-Kompass</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    :root { color-scheme: light; }
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif; }
+    /* Modus-Stile (Basisgröße und Lesbarkeit) */
+    html.mode-standard { font-size: 16px; }
+    html.mode-kid { font-size: 17px; }
+    html.mode-senior { font-size: 19px; }
+    /* Größere Touch-Ziele in Senior/Kid */
+    html.mode-senior .touch-lg, html.mode-kid .touch-lg { padding: 1rem 1rem !important; }
+    html.mode-senior .radio-lg, html.mode-kid .radio-lg { width: 1.5rem; height: 1.5rem; }
+    /* Kontrastboost für Senior */
+    html.mode-senior .hc-bg { background-color: #f7fafc; }
+    html.mode-senior .hc-text { color: #111827; }
+    html.mode-senior .hc-border { border-color: #111827 !important; }
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="h-full bg-gray-100 text-gray-900 flex items-center justify-center p-4">
+  <main id="app" class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 sm:p-8 space-y-6" aria-live="polite">
+    <!-- Header -->
+    <header class="text-center">
+      <div class="mb-3">
+        <i class="fas fa-compass text-5xl text-blue-600" aria-hidden="true"></i>
+      </div>
+      <h1 class="text-3xl font-bold">Ethik- &amp; Werte-Kompass</h1>
+      <p class="text-gray-600 mt-2">Bewerte Technologie aus einer bewussten, humanistischen Perspektive.</p>
+    </header>
 
-    <div id="app" class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 sm:p-8 space-y-6 flex flex-col justify-between transform transition-all duration-300">
-        <!-- Willkommens-Ansicht -->
-        <div id="welcome-view" class="text-center">
-            <div class="mb-6">
-                <i class="fas fa-compass text-6xl text-blue-600 mb-4"></i>
-                <h1 class="text-3xl font-bold text-gray-800">Ethik- & Werte-Kompass</h1>
-            </div>
-            <p class="text-gray-600 mb-6">
-                Beantworte einige Fragen zu einem digitalen Produkt, um seine Auswirkungen auf dich und dein Umfeld besser zu verstehen.
-            </p>
-            <button id="start-button" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                Starten
-            </button>
-        </div>
-
-        <!-- Fragen-Ansicht -->
-        <div id="questions-view" class="hidden flex-1 flex flex-col justify-between">
+    <!-- Modus-Wahl (vor der Nutzung) -->
+    <section id="mode-view" class="space-y-4">
+      <h2 class="text-xl font-semibold">Bitte Modus wählen</h2>
+      <div class="grid sm:grid-cols-3 gap-3">
+        <!-- Standard -->
+        <label class="block border rounded-xl p-4 cursor-pointer hover:shadow focus-within:ring-2 focus-within:ring-blue-500" tabindex="0">
+          <div class="flex items-start gap-3">
+            <input class="mt-1 h-5 w-5 accent-blue-600" type="radio" name="mode" value="standard" aria-label="Standard Modus">
             <div>
-                <div id="progress-container" class="w-full bg-gray-200 rounded-full h-2.5 mb-6 overflow-hidden">
-                    <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-in-out" style="width: 0%;"></div>
-                </div>
-                <div class="mb-6">
-                    <p id="question-text" class="text-xl font-semibold text-gray-700 mb-4"></p>
-                    <div id="options-container" class="space-y-4">
-                        <!-- Optionen werden hier von JavaScript eingefügt -->
-                    </div>
-                </div>
+              <p class="font-semibold">Standard</p>
+              <p class="text-sm text-gray-600">Ausgewogene Sprache, normale Schrift.</p>
             </div>
+          </div>
+        </label>
+        <!-- Kinder -->
+        <label class="block border rounded-xl p-4 cursor-pointer hover:shadow focus-within:ring-2 focus-within:ring-blue-500" tabindex="0">
+          <div class="flex items-start gap-3">
+            <input class="mt-1 h-5 w-5 accent-blue-600" type="radio" name="mode" value="kid" aria-label="Kinder Modus">
+            <div>
+              <p class="font-semibold">Kinder</p>
+              <p class="text-sm text-gray-600">Einfache Sprache, Emojis, größere Klickflächen.</p>
+            </div>
+          </div>
+        </label>
+        <!-- Senioren -->
+        <label class="block border rounded-xl p-4 cursor-pointer hover:shadow focus-within:ring-2 focus-within:ring-blue-500" tabindex="0">
+          <div class="flex items-start gap-3">
+            <input class="mt-1 h-5 w-5 accent-blue-600" type="radio" name="mode" value="senior" aria-label="Senioren Modus">
+            <div>
+              <p class="font-semibold">Senioren</p>
+              <p class="text-sm text-gray-600">Größere Schrift, hoher Kontrast, große Tasten.</p>
+            </div>
+          </div>
+        </label>
+      </div>
 
-            <div class="flex justify-between space-x-4 mt-6">
-                <button id="back-button" class="flex-1 bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-xl hover:bg-gray-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
-                    Zurück
-                </button>
-                <button id="next-button" class="flex-1 bg-blue-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                    Weiter
-                </button>
-            </div>
+      <section class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
+        <div class="text-sm text-blue-900">
+          <p class="font-semibold">Privatsphäre zuerst</p>
+          <p class="opacity-90">Standard: <strong>keine</strong> Datenspeicherung. Optional lokale Speicherung aktivieren.</p>
+        </div>
+        <label class="inline-flex items-center gap-3">
+          <span class="text-sm font-medium">Lokal speichern (optional)</span>
+          <input id="toggle-storage" type="checkbox" class="h-5 w-5 accent-blue-600">
+        </label>
+      </section>
+
+      <button id="continue-button"
+        class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        disabled>
+        Weiter zur Einführung
+      </button>
+    </section>
+
+    <!-- Einführung / Vision -->
+    <section id="welcome-view" class="hidden text-center space-y-5">
+      <div class="grid sm:grid-cols-3 gap-3 text-left">
+        <div class="p-4 bg-gray-50 rounded-lg">
+          <p class="text-sm font-semibold">Vision</p>
+          <p class="text-sm text-gray-600" id="vision-text">Freiheit, Miteinander & Empathie im Digitalen stärken.</p>
+        </div>
+        <div class="p-4 bg-gray-50 rounded-lg">
+          <p class="text-sm font-semibold">Zweck</p>
+          <p class="text-sm text-gray-600" id="purpose-text">Gedankenlose Nutzung stoppen – bewusst entscheiden.</p>
+        </div>
+        <div class="p-4 bg-gray-50 rounded-lg">
+          <p class="text-sm font-semibold">USP</p>
+          <p class="text-sm text-gray-600" id="usp-text">Reflexion statt Bewertung von außen – deine Werte zählen.</p>
+        </div>
+      </div>
+      <button id="start-button"
+        class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        Kompass starten
+      </button>
+    </section>
+
+    <!-- Fragen -->
+    <section id="questions-view" class="hidden">
+      <div class="flex items-center justify-between mb-2">
+        <p id="progress-label" class="text-sm text-gray-600">Frage 1 von 12</p>
+        <p id="progress-percent" class="text-sm font-semibold text-gray-700">0%</p>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6 overflow-hidden" aria-hidden="true">
+        <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" style="width:0%"></div>
+      </div>
+
+      <div class="mb-6">
+        <p id="category-pill" class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide bg-gray-100 text-gray-700 px-3 py-1 rounded-full mb-3">
+          <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+          <span id="category-name">Kategorie</span>
+        </p>
+        <h2 id="question-text" class="text-xl font-semibold mb-4 hc-text"></h2>
+        <fieldset id="options-fieldset" class="space-y-3">
+          <legend class="sr-only">Antwortmöglichkeiten</legend>
+          <div id="options-container" class="space-y-3"></div>
+        </fieldset>
+        <p id="question-hint" class="text-sm text-gray-500 mt-3"></p>
+      </div>
+
+      <div class="flex gap-3">
+        <button id="back-button"
+          class="flex-1 bg-gray-200 text-gray-800 font-semibold py-3 rounded-xl hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 touch-lg">
+          Zurück
+        </button>
+        <button id="next-button"
+          class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 touch-lg"
+          disabled>
+          Weiter
+        </button>
+      </div>
+    </section>
+
+    <!-- Ergebnisse -->
+    <section id="results-view" class="hidden">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold mb-1">Dein Kompass-Ergebnis</h2>
+        <p class="text-gray-600">Gesamtbewertung & Dimensionen im Überblick</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-6 mb-6">
+        <!-- Ring -->
+        <div class="relative w-48 h-48 mx-auto">
+          <svg class="w-full h-full transform -rotate-90" viewBox="0 0 160 160" role="img" aria-labelledby="score-t score-d">
+            <title id="score-t">Gesamtscore</title>
+            <desc id="score-d">Kreisvisualisierung des prozentualen Ergebnisses</desc>
+            <circle stroke-width="12" stroke="#e5e7eb" fill="transparent" r="70" cx="80" cy="80"></circle>
+            <circle id="score-circle" stroke-width="12" stroke="#2563eb" fill="transparent" r="70" cx="80" cy="80" stroke-linecap="round"
+              style="transition: stroke-dashoffset 800ms ease"></circle>
+          </svg>
+          <span id="score-text" class="absolute inset-0 flex items-center justify-center text-4xl font-extrabold"></span>
         </div>
 
-        <!-- Ergebnisse-Ansicht -->
-        <div id="results-view" class="hidden text-center">
-            <div class="mb-6">
-                <h2 class="text-3xl font-bold text-gray-800 mb-2">Dein Kompass-Ergebnis</h2>
-                <div id="score-ring" class="relative w-40 h-40 mx-auto mb-4">
-                    <!-- Der Kreis für die Punktzahl wird hier von JavaScript gerendert -->
-                    <svg class="w-full h-full transform -rotate-90">
-                        <circle class="text-gray-200" stroke-width="12" stroke="currentColor" fill="transparent" r="70" cx="80" cy="80"></circle>
-                        <circle id="score-circle" class="text-blue-600 transition-all duration-700 ease-in-out" stroke-width="12" stroke="currentColor" fill="transparent" r="70" cx="80" cy="80"></circle>
-                    </svg>
-                    <span id="score-text" class="absolute inset-0 flex items-center justify-center text-4xl font-bold text-gray-800"></span>
-                </div>
-                <p id="result-text" class="text-lg font-semibold"></p>
-            </div>
-            <button id="restart-button" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                Neuer Check
-            </button>
+        <!-- Summary text -->
+        <div class="space-y-3">
+          <p id="result-text" class="text-lg font-semibold"></p>
+          <ul class="text-sm text-gray-700 list-disc pl-5 space-y-1">
+            <li><strong>Kant:</strong> Mensch als Zweck, nicht nur Mittel.</li>
+            <li><strong>Würde:</strong> Technologie soll Autonomie & Beziehungen schützen.</li>
+            <li><strong>Verantwortung:</strong> Blick auf Folgen (privat & gesellschaftlich).</li>
+            <li><strong>Nachhaltigkeit:</strong> Verantwortung für Umwelt & Zukunft.</li>
+          </ul>
         </div>
-    </div>
+      </div>
 
-    <script>
-        // Haupt-JavaScript-Logik für die App
-        
-        // Konstanten für die HTML-Elemente
-        const app = document.getElementById('app');
-        const welcomeView = document.getElementById('welcome-view');
-        const questionsView = document.getElementById('questions-view');
-        const resultsView = document.getElementById('results-view');
-        const startButton = document.getElementById('start-button');
-        const backButton = document.getElementById('back-button');
-        const nextButton = document.getElementById('next-button');
-        const questionText = document.getElementById('question-text');
-        const optionsContainer = document.getElementById('options-container');
-        const progressBar = document.getElementById('progress-bar');
-        const scoreCircle = document.getElementById('score-circle');
-        const scoreText = document.getElementById('score-text');
-        const resultText = document.getElementById('result-text');
-        const restartButton = document.getElementById('restart-button');
+      <!-- Breakdown -->
+      <div class="space-y-4 mb-6" id="breakdown"></div>
 
-        // Die Fragen für den Kompass
-        // Jede Frage hat eine ID, den Text und Optionen mit Werten.
-        const questions = [
-            {
-                id: 'question1',
-                text: 'Was ist der Hauptzweck dieser App für mich?',
-                options: [
-                    { value: 1, text: 'Es unterhält mich nur.', score: 1 },
-                    { value: 2, text: 'Es erleichtert mein Leben ein wenig.', score: 2 },
-                    { value: 3, text: 'Es hilft mir, produktiver zu sein.', score: 3 },
-                    { value: 4, text: 'Es bringt mir echtes Wissen oder Fähigkeiten bei.', score: 4 },
-                    { value: 5, text: 'Es verbessert meine Lebensqualität nachhaltig.', score: 5 }
-                ]
-            },
-            {
-                id: 'question2',
-                text: 'Wie beeinflusst die App meine zwischenmenschlichen Beziehungen?',
-                options: [
-                    { value: 1, text: 'Sie isoliert mich von Freunden und Familie.', score: 1 },
-                    { value: 2, text: 'Sie lenkt mich von persönlichen Gesprächen ab.', score: 2 },
-                    { value: 3, text: 'Sie hat keinen Einfluss auf meine Beziehungen.', score: 3 },
-                    { value: 4, text: 'Sie ermöglicht neue Wege, um in Kontakt zu bleiben.', score: 4 },
-                    { value: 5, text: 'Sie stärkt meine Beziehungen und mein Miteinander.', score: 5 }
-                ]
-            },
-            {
-                id: 'question3',
-                text: 'Macht mich die App eher abhängig oder gibt sie mir Kontrolle?',
-                options: [
-                    { value: 1, text: 'Sie macht mich süchtig und ich brauche sie ständig.', score: 1 },
-                    { value: 2, text: 'Ich fühle mich gezwungen, sie regelmäßig zu nutzen.', score: 2 },
-                    { value: 3, text: 'Ich nutze sie, wenn ich sie brauche, ohne Druck.', score: 3 },
-                    { value: 4, text: 'Sie hilft mir, meine Zeit besser zu planen und zu verwalten.', score: 4 },
-                    { value: 5, text: 'Sie stärkt meine Autonomie und Selbstkontrolle.', score: 5 }
-                ]
-            },
-            {
-                id: 'question4',
-                text: 'Wie transparent ist die App in Bezug auf meine Daten?',
-                options: [
-                    { value: 1, text: 'Ich weiß nicht, was mit meinen Daten passiert.', score: 1 },
-                    { value: 2, text: 'Die Datenschutzbestimmungen sind unklar und kompliziert.', score: 2 },
-                    { value: 3, text: 'Die App sammelt einige Daten, aber das ist akzeptabel.', score: 3 },
-                    { value: 4, text: 'Ich kann meine Daten leicht einsehen und löschen.', score: 4 },
-                    { value: 5, text: 'Sie respektiert meine Privatsphäre vollständig.', score: 5 }
-                ]
-            }
-        ];
+      <div class="grid sm:grid-cols-2 gap-3">
+        <button id="review-answers"
+          class="w-full bg-gray-200 text-gray-800 font-semibold py-3 rounded-xl hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 touch-lg">
+          Antworten ansehen
+        </button>
+        <button id="restart-button"
+          class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 touch-lg">
+          Neuer Check
+        </button>
+      </div>
+    </section>
 
-        // Zustandsvariablen für die App
-        let currentQuestionIndex = 0;
-        let answers = {};
-        const totalQuestions = questions.length;
-        const totalScoreMax = totalQuestions * 5;
+    <!-- Fußnote -->
+    <footer class="text-center text-xs text-gray-500">
+      Hinweis: Der Kompass ist ein Reflexions-Tool, kein Urteil. Nutze ihn als Gesprächsanstoß.
+    </footer>
+  </main>
 
-        // Funktionen zum Verwalten der Ansichten
-        const showView = (view) => {
-            welcomeView.classList.add('hidden');
-            questionsView.classList.add('hidden');
-            resultsView.classList.add('hidden');
-            view.classList.remove('hidden');
-        };
+  <script>
+    // ======= Modus-Texte (vereinfachte Kinderformulierung + Emojis, Senior sachlich klar) =======
+    const TEXTS = {
+      standard: {
+        vision: "Freiheit, Miteinander & Empathie im Digitalen stärken.",
+        purpose: "Gedankenlose Nutzung stoppen – bewusst entscheiden.",
+        usp: "Reflexion statt Bewertung von außen – deine Werte zählen.",
+        options: [
+          { value: 1, label: "Trifft gar nicht zu" },
+          { value: 2, label: "Eher nicht" },
+          { value: 3, label: "Teils/Teils" },
+          { value: 4, label: "Eher ja" },
+          { value: 5, label: "Trifft voll zu" }
+        ]
+      },
+      kid: {
+        vision: "Tech soll gut für Menschen sein 🤝💙",
+        purpose: "Kurz nachdenken, bevor du klickst 🧠✨",
+        usp: "Deine Meinung zählt – nicht nur Sterne!",
+        options: [
+          { value: 1, label: "Nee, gar nicht" },
+          { value: 2, label: "Eher nein" },
+          { value: 3, label: "Geht so" },
+          { value: 4, label: "Schon eher" },
+          { value: 5, label: "Ja, voll!" }
+        ]
+      },
+      senior: {
+        vision: "Selbstbestimmt und verbunden im digitalen Alltag.",
+        purpose: "Bewusst nutzen statt ablenken lassen.",
+        usp: "Einfach, ruhig, klar: Ihre Werte im Mittelpunkt.",
+        options: [
+          { value: 1, label: "Trifft gar nicht zu" },
+          { value: 2, label: "Trifft eher nicht zu" },
+          { value: 3, label: "Teils/Teils" },
+          { value: 4, label: "Trifft eher zu" },
+          { value: 5, label: "Trifft vollständig zu" }
+        ]
+      }
+    };
 
-        // Funktion zum Anzeigen der aktuellen Frage
-        const displayQuestion = () => {
-            // Zeige die Fragen-Ansicht, wenn sie nicht sichtbar ist
-            showView(questionsView);
+    // ======= Dimensionen & Fragen (Texte je Modus variieren leicht) =======
+    function buildDimensions(mode) {
+      const kid = mode === 'kid';
+      const senior = mode === 'senior';
+      const simp = (std, k, s) => mode === 'kid' ? k : (mode === 'senior' ? s : std);
 
-            // Hol die aktuelle Frage
-            const currentQuestion = questions[currentQuestionIndex];
-            questionText.textContent = currentQuestion.text;
-            optionsContainer.innerHTML = ''; // Entferne vorherige Optionen
+      return [
+        {
+          id: 'purpose',
+          name: simp('Vision & Sinn','Wofür ist die App?','Zweck & Nutzen'),
+          color: 'bg-blue-600',
+          hint: simp('Dient die App dir – oder nutzt sie dich?',
+                     'Hilft die App dir wirklich? Oder lenkt sie nur ab?',
+                     'Unterstützt die App Ihren Alltag – oder bindet sie vor allem Zeit?'),
+          questions: [
+            { id: 'purpose_q1', text: simp(
+              'Wie sehr verbessert die App deine Lebensqualität oder Bildung?',
+              'Macht die App dein Leben besser oder schlauer?',
+              'Verbessert die App Ihre Lebensqualität oder vermittelt sie Wissen?'
+            )},
+            { id: 'purpose_q2', text: simp(
+              'Ist der positive Zweck der App für dich klar erkennbar?',
+              'Ist klar, wozu die App gut ist?',
+              'Ist der Nutzen der App klar erkennbar und nachvollziehbar?'
+            )}
+          ]
+        },
+        {
+          id: 'relations',
+          name: simp('Beziehungen & Miteinander','Freunde & Familie','Beziehungen'),
+          color: 'bg-emerald-600',
+          hint: simp('Stärkt die App echte Beziehungen?',
+                     'Hilft die App bei echtem Miteinander?',
+                     'Fördert die App echte Kontakte und Austausch?'),
+          questions: [
+            { id: 'relations_q1', text: simp(
+              'Fördert die App Austausch und Verbundenheit (statt zu isolieren)?',
+              'Hilft die App dir, mit anderen in Kontakt zu sein?',
+              'Stärkt die App Verbundenheit statt zu isolieren?'
+            )},
+            { id: 'relations_q2', text: simp(
+              'Hilft dir die App, Konflikte zu vermeiden oder besser zu kommunizieren?',
+              'Macht die App Gespräche einfacher und fairer?',
+              'Erleichtert die App Kommunikation und reduziert Missverständnisse?'
+            )}
+          ]
+        },
+        {
+          id: 'autonomy',
+          name: simp('Autonomie & Kontrolle','Du entscheidest!','Kontrolle & Ruhe'),
+          color: 'bg-purple-600',
+          hint: simp('Wer steuert wen: du die App – oder die App dich?',
+                     'Bestimmst du – oder bestimmt die App?',
+                     'Bleiben Zeit & Aufmerksamkeit unter Ihrer Kontrolle?'),
+          questions: [
+            { id: 'autonomy_q1', text: simp(
+              'Nutzt du die App selbstbestimmt (ohne Sog/Abhängigkeit)?',
+              'Kannst du gut aufhören, wenn du willst?',
+              'Nutzen Sie die App selbstbestimmt – ohne Sogwirkung?'
+            )},
+            { id: 'autonomy_q2', text: simp(
+              'Schützt die App deine Zeit und Aufmerksamkeit (z. B. wenige Ablenkungen)?',
+              'Lenkt die App wenig ab (keine ständigen Pop-ups)?',
+              'Hilft die App, Zeit & Aufmerksamkeit zu schützen (wenig Ablenkungen)?'
+            )}
+          ]
+        },
+        {
+          id: 'privacy',
+          name: simp('Daten & Transparenz','Deine Daten','Datenschutz & Klarheit'),
+          color: 'bg-amber-600',
+          hint: simp('Verstehst du, welche Daten erhoben werden?',
+                     'Weißt du, welche Daten die App nimmt?',
+                     'Ist verständlich, welche Daten erhoben und wie sie genutzt werden?'),
+          questions: [
+            { id: 'privacy_q1', text: simp(
+              'Ist die Datennutzung transparent und verständlich?',
+              'Erklärt die App leicht, welche Daten sie sammelt?',
+              'Sind Erhebung und Nutzung der Daten klar erklärt?'
+            )},
+            { id: 'privacy_q2', text: simp(
+              'Hast du echte Kontrolle (Einsehen/Löschen/Opt-out)?',
+              'Kannst du Daten sehen und löschen?',
+              'Haben Sie Kontrolle: Einsehen, Löschen, Abwählen (Opt-out)?'
+            )}
+          ]
+        },
+        {
+          id: 'character',
+          name: simp('Charakterwirkung','Gut für dich?','Haltung & Tugenden'),
+          color: 'bg-rose-600',
+          hint: simp('Formt die App Achtsamkeit, Empathie, Mündigkeit?',
+                     'Macht die App dich fairer und achtsamer?',
+                     'Fördert die App Achtsamkeit, Empathie, Mündigkeit?'),
+          questions: [
+            { id: 'character_q1', text: simp(
+              'Fördert die App Achtsamkeit, Empathie oder Verantwortungsgefühl?',
+              'Hilft die App, freundlich und fair zu sein?',
+              'Stärkt die App Achtsamkeit, Empathie, Verantwortungsgefühl?'
+            )},
+            { id: 'character_q2', text: simp(
+              'Verringert die App Impulsivität oder Oberflächlichkeit?',
+              'Hilft die App, nicht vorschnell zu handeln?',
+              'Reduziert die App impulsive/oberflächliche Nutzungsmuster?'
+            )}
+          ]
+        },
+        {
+          id: 'environment',
+          name: simp('Umwelt & Klima','Umwelt','Nachhaltigkeit'),
+          color: 'bg-teal-600',
+          hint: simp('Hat die Nutzung eher ressourcenschonende Effekte?',
+                     'Ist die App sparsam – kein „Daten-Müll“?',
+                     'Wirkt die Nutzung ressourcenschonend (Daten, Energie)?'),
+          questions: [
+            { id: 'environment_q1', text: simp(
+              'Regt die App zu nachhaltigerem digitalen Verhalten an?',
+              'Hilft die App, weniger unnötige Apps/Streams zu nutzen?',
+              'Regt die App zu sparsamerem digitalen Verhalten an?'
+            )},
+            { id: 'environment_q2', text: simp(
+              'Verzichtet die App auf unnötig ressourcenintensive Funktionen?',
+              'Kommt die App ohne überflüssigen Schnickschnack aus?',
+              'Vermeidet die App unnötig ressourcenintensive Funktionen?'
+            )}
+          ]
+        }
+      ];
+    }
 
-            // Erstelle die Optionen dynamisch
-            currentQuestion.options.forEach(option => {
-                const label = document.createElement('label');
-                label.className = 'flex items-center p-4 bg-gray-100 rounded-lg cursor-pointer transition-colors duration-200 hover:bg-gray-200';
-                
-                const radio = document.createElement('input');
-                radio.type = 'radio';
-                radio.name = `question-${currentQuestion.id}`;
-                radio.value = option.value;
-                radio.className = 'form-radio h-5 w-5 text-blue-600 transition-colors duration-200 focus:ring-blue-500 focus:ring-opacity-50';
-                
-                const span = document.createElement('span');
-                span.className = 'ml-3 text-gray-700 font-medium';
-                span.textContent = option.text;
+    // ======= Likert-Optionen je Modus =======
+    function likertOptions(mode) { return TEXTS[mode].options; }
 
-                // Lade die vorherige Antwort, falls vorhanden
-                if (answers[currentQuestion.id] === option.value) {
-                    radio.checked = true;
-                }
+    // ======= Zustand
+    let mode = 'standard';
+    let DIMENSIONS = buildDimensions(mode);
+    let questionsFlat = DIMENSIONS.flatMap(d => d.questions.map(q => ({ ...q, dim: d.id })));
+    const totalQuestionsMax = 12; // 6 Dimensionen * 2
+    const totalScoreMax = totalQuestionsMax * 5;
 
-                label.appendChild(radio);
-                label.appendChild(span);
-                optionsContainer.appendChild(label);
-            });
+    let currentIndex = 0;
+    let answers = {};
+    let useLocalStorage = false;
+    const LS_KEY = 'ethik-kompass-answers-v3';
 
-            // Aktualisiere den Fortschrittsbalken
-            const progress = (currentQuestionIndex / totalQuestions) * 100;
-            progressBar.style.width = `${progress}%`;
+    // ======= Elemente
+    const htmlEl = document.documentElement;
 
-            // Aktualisiere die Buttons
-            backButton.classList.toggle('hidden', currentQuestionIndex === 0);
-            nextButton.textContent = currentQuestionIndex === totalQuestions - 1 ? 'Ergebnis anzeigen' : 'Weiter';
-        };
+    const modeView = document.getElementById('mode-view');
+    const continueBtn = document.getElementById('continue-button');
+    const toggleStorage = document.getElementById('toggle-storage');
 
-        // Funktion zum Speichern der Antwort und zum Navigieren
-        const handleNext = () => {
-            const currentQuestion = questions[currentQuestionIndex];
-            const selectedOption = document.querySelector(`input[name="question-${currentQuestion.id}"]:checked`);
-            
-            if (!selectedOption) {
-                // Zeige eine Fehlermeldung, wenn keine Option ausgewählt ist
-                // Anstelle von alert() zeigen wir eine temporäre Nachricht
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'mt-4 text-red-500 text-sm text-center';
-                errorDiv.textContent = 'Bitte wähle eine Option aus, um fortzufahren.';
-                optionsContainer.appendChild(errorDiv);
-                setTimeout(() => errorDiv.remove(), 3000); // Entferne die Nachricht nach 3 Sekunden
-                return;
-            }
+    const welcomeView = document.getElementById('welcome-view');
+    const startButton = document.getElementById('start-button');
+    const visionText = document.getElementById('vision-text');
+    const purposeText = document.getElementById('purpose-text');
+    const uspText = document.getElementById('usp-text');
 
-            // Speichere die Antwort
-            answers[currentQuestion.id] = parseInt(selectedOption.value);
-            
-            if (currentQuestionIndex < totalQuestions - 1) {
-                currentQuestionIndex++;
-                displayQuestion();
-            } else {
-                displayResults();
-            }
-        };
+    const questionsView = document.getElementById('questions-view');
+    const progressBar = document.getElementById('progress-bar');
+    const progressLabel = document.getElementById('progress-label');
+    const progressPercent = document.getElementById('progress-percent');
+    const categoryName = document.getElementById('category-name');
+    const questionText = document.getElementById('question-text');
+    const questionHint = document.getElementById('question-hint');
+    const optionsContainer = document.getElementById('options-container');
+    const backButton = document.getElementById('back-button');
+    const nextButton = document.getElementById('next-button');
 
-        // Funktion zur Navigation zurück
-        const handleBack = () => {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                displayQuestion();
-            }
-        };
+    const resultsView = document.getElementById('results-view');
+    const scoreCircle = document.getElementById('score-circle');
+    const scoreText = document.getElementById('score-text');
+    const resultText = document.getElementById('result-text');
+    const breakdownEl = document.getElementById('breakdown');
+    const restartButton = document.getElementById('restart-button');
+    const reviewAnswersBtn = document.getElementById('review-answers');
 
-        // Funktion zum Anzeigen der Ergebnisse
-        const displayResults = () => {
-            // Berechne die Gesamtpunktzahl
-            let totalScore = 0;
-            for (const questionId in answers) {
-                const question = questions.find(q => q.id === questionId);
-                const option = question.options.find(opt => opt.value === answers[questionId]);
-                if (option) {
-                    totalScore += option.score;
-                }
-            }
-            
-            const scorePercentage = Math.round((totalScore / totalScoreMax) * 100);
+    // ======= Helpers
+    function showOnly(view) {
+      for (const v of [modeView, welcomeView, questionsView, resultsView]) v.classList.add('hidden');
+      view.classList.remove('hidden');
+    }
 
-            // Zeige die Ergebnisse-Ansicht
-            showView(resultsView);
-            
-            // Setze die Ergebnisse in der UI
-            scoreText.textContent = `${scorePercentage}%`;
+    function applyMode(newMode) {
+      mode = newMode;
+      // HTML Klassen setzen (Schrift & Kontrast)
+      htmlEl.classList.remove('mode-standard','mode-kid','mode-senior');
+      htmlEl.classList.add(`mode-${mode}`);
+      // Texte aktualisieren
+      visionText.textContent = TEXTS[mode].vision;
+      purposeText.textContent = TEXTS[mode].purpose;
+      uspText.textContent = TEXTS[mode].usp;
+      // Fragen neu bauen
+      DIMENSIONS = buildDimensions(mode);
+      questionsFlat = DIMENSIONS.flatMap(d => d.questions.map(q => ({ ...q, dim: d.id })));
+      currentIndex = 0;
+      answers = {};
+    }
 
-            // Animiere den Fortschrittskreis
-            const circumference = 2 * Math.PI * 70; // 70 ist der Radius
-            scoreCircle.style.strokeDasharray = circumference;
-            scoreCircle.style.strokeDashoffset = circumference - (scorePercentage / 100) * circumference;
+    function setProgress() {
+      const done = Math.round((currentIndex / totalQuestionsMax) * 100);
+      progressBar.style.width = `${done}%`;
+      progressLabel.textContent = `Frage ${currentIndex + 1} von ${totalQuestionsMax}`;
+      progressPercent.textContent = `${done}%`;
+    }
 
-            // Setze den Ergebnistext basierend auf der Punktzahl
-            if (scorePercentage >= 80) {
-                resultText.textContent = 'Sehr gute Werte-Ausrichtung! Dieses Produkt scheint mit deinen humanistischen Prinzipien im Einklang zu stehen.';
-                resultText.className = 'text-green-600 font-semibold';
-            } else if (scorePercentage >= 60) {
-                resultText.textContent = 'Gute Werte-Ausrichtung. Das Produkt hat viele positive Seiten, aber es ist gut, einige Punkte im Auge zu behalten.';
-                resultText.className = 'text-yellow-600 font-semibold';
-            } else if (scorePercentage >= 40) {
-                resultText.textContent = 'Mäßige Werte-Ausrichtung. Eine kritische Reflexion ist hier angebracht, um die negativen Aspekte zu minimieren.';
-                resultText.className = 'text-orange-600 font-semibold';
-            } else {
-                resultText.textContent = 'Achtung! Dieses Produkt könnte einige Herausforderungen für deine Werte darstellen. Sei sehr achtsam beim Gebrauch.';
-                resultText.className = 'text-red-600 font-semibold';
-            }
-        };
+    function renderQuestion() {
+      showOnly(questionsView);
+      setProgress();
 
-        // Funktion zum Neustarten der App
-        const handleRestart = () => {
-            currentQuestionIndex = 0;
-            answers = {};
-            showView(welcomeView);
-        };
+      const q = questionsFlat[currentIndex];
+      const dim = DIMENSIONS.find(d => d.id === q.dim);
+      // Kategorie
+      categoryName.textContent = dim.name;
+      document.querySelector('#category-pill span.w-2').className = `w-2 h-2 rounded-full ${dim.color}`;
+      questionText.textContent = q.text;
+      questionHint.textContent = dim.hint;
 
-        // Event-Listener
-        startButton.addEventListener('click', displayQuestion);
-        nextButton.addEventListener('click', handleNext);
-        backButton.addEventListener('click', handleBack);
-        restartButton.addEventListener('click', handleRestart);
+      // Antworten
+      optionsContainer.innerHTML = '';
+      const opts = likertOptions(mode);
+      opts.forEach(opt => {
+        const id = `${q.id}_${opt.value}`;
+        const label = document.createElement('label');
+        label.setAttribute('for', id);
+        label.className = 'flex items-start gap-3 p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 hc-bg';
 
-        // Initialisiere die App auf der Willkommens-Ansicht
-        showView(welcomeView);
-    </script>
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.id = id;
+        input.name = q.id;
+        input.value = String(opt.value);
+        input.className = 'mt-1 h-5 w-5 accent-blue-600 radio-lg';
+        input.checked = Number(answers[q.id]) === opt.value;
 
+        const span = document.createElement('span');
+        span.className = 'text-gray-800 hc-text';
+        span.innerHTML = `<span class="font-semibold">${opt.value}</span> – ${opt.label}`;
+
+        label.appendChild(input);
+        label.appendChild(span);
+        optionsContainer.appendChild(label);
+      });
+
+      backButton.classList.toggle('hidden', currentIndex === 0);
+      nextButton.textContent = currentIndex === totalQuestionsMax - 1 ? (mode === 'kid' ? 'Ergebnis zeigen 🎉' : 'Ergebnis anzeigen') : 'Weiter';
+      nextButton.disabled = !(q.id in answers);
+
+      optionsContainer.onchange = (e) => {
+        if (e.target && e.target.name === q.id) {
+          answers[q.id] = Number(e.target.value);
+          if (useLocalStorage) {
+            try { localStorage.setItem(LS_KEY, JSON.stringify({ mode, answers })); } catch {}
+          }
+          nextButton.disabled = false;
+        }
+      };
+    }
+
+    function computeResults() {
+      let totalScore = 0;
+      const perDim = DIMENSIONS.map(d => ({ id: d.id, name: d.name, color: d.color, sum: 0, max: d.questions.length * 5 }));
+      for (const q of questionsFlat) {
+        const v = Number(answers[q.id] || 0);
+        totalScore += v;
+        const d = perDim.find(x => x.id === q.dim);
+        d.sum += v;
+      }
+      const percent = Math.round((totalScore / totalScoreMax) * 100);
+      return { percent, perDim };
+    }
+
+    function renderResults() {
+      const { percent, perDim } = computeResults();
+      showOnly(resultsView);
+
+      // Ring
+      const r = 70, circumference = 2 * Math.PI * r;
+      scoreCircle.style.strokeDasharray = String(circumference);
+      scoreCircle.style.strokeDashoffset = String(circumference);
+      scoreText.textContent = `${percent}%`;
+      requestAnimationFrame(() => {
+        const offset = circumference - (percent / 100) * circumference;
+        scoreCircle.style.strokeDashoffset = String(offset);
+      });
+
+      // Ergebnistext (leicht variiert je Modus)
+      const good = mode === 'kid' ? 'Sehr gut – die App passt zu dir!' : 'Sehr gute Werte-Ausrichtung.';
+      const ok = mode === 'kid' ? 'Gut – ein paar Punkte im Blick behalten.' : 'Gute Ausrichtung – einzelne Punkte beachten.';
+      const meh = mode === 'kid' ? 'Gemischt – überleg nochmal in Ruhe.' : 'Gemischtes Bild – kritisch nachschärfen.';
+      const bad = mode === 'kid' ? 'Aufpassen – eher nicht passend.' : 'Achtung – deutliche Spannungen zu deinen Werten.';
+
+      if (percent >= 80) {
+        resultText.textContent = good;
+        resultText.className = 'text-lg font-semibold text-green-600';
+      } else if (percent >= 60) {
+        resultText.textContent = ok;
+        resultText.className = 'text-lg font-semibold text-amber-600';
+      } else if (percent >= 40) {
+        resultText.textContent = meh;
+        resultText.className = 'text-lg font-semibold text-orange-600';
+      } else {
+        resultText.textContent = bad;
+        resultText.className = 'text-lg font-semibold text-red-600';
+      }
+
+      // Breakdown
+      breakdownEl.innerHTML = '';
+      perDim.forEach(d => {
+        const pct = Math.round((d.sum / d.max) * 100);
+        const row = document.createElement('div');
+        row.className = 'p-4 bg-gray-50 rounded-xl hc-bg hc-border';
+        row.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-sm font-semibold hc-text">${d.name}</p>
+            <p class="text-sm font-semibold hc-text">${pct}%</p>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+            <div class="${d.color} h-2.5 rounded-full" style="width:${pct}%"></div>
+          </div>
+        `;
+        breakdownEl.appendChild(row);
+      });
+    }
+
+    // ======= Navigation
+    function next() {
+      const q = questionsFlat[currentIndex];
+      if (!(q.id in answers)) {
+        const warn = document.createElement('div');
+        warn.className = 'mt-3 text-red-600 text-sm';
+        warn.textContent = mode === 'kid' ? 'Bitte auswählen 😊' : 'Bitte wähle eine Option aus.';
+        optionsContainer.appendChild(warn);
+        setTimeout(() => warn.remove(), 2000);
+        return;
+      }
+      if (currentIndex < totalQuestionsMax - 1) {
+        currentIndex++;
+        renderQuestion();
+      } else {
+        renderResults();
+      }
+    }
+
+    function back() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderQuestion();
+      }
+    }
+
+    function restart() {
+      currentIndex = 0;
+      answers = {};
+      try { localStorage.removeItem(LS_KEY); } catch {}
+      showOnly(modeView);
+      // Modus-Auswahl wieder zurücksetzen (optional)
+      document.querySelectorAll('input[name="mode"]').forEach(r => r.checked = false);
+      continueBtn.disabled = true;
+    }
+
+    function reviewAnswers() {
+      const idx = questionsFlat.findIndex(q => !(q.id in answers));
+      currentIndex = idx >= 0 ? idx : totalQuestionsMax - 1;
+      renderQuestion();
+    }
+
+    // ======= Events
+    // Modus auswählen
+    document.querySelectorAll('input[name="mode"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        applyMode(e.target.value);
+        continueBtn.disabled = false;
+      });
+      // Tastatur-Klick auf Label
+      radio.closest('label').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          radio.checked = true;
+          radio.dispatchEvent(new Event('change'));
+        }
+      });
+    });
+
+    // Speicherschalter
+    toggleStorage.addEventListener('change', (e) => {
+      useLocalStorage = e.target.checked;
+      if (!useLocalStorage) {
+        try { localStorage.removeItem(LS_KEY); } catch {}
+      } else {
+        try { localStorage.setItem(LS_KEY, JSON.stringify({ mode, answers })); } catch {}
+      }
+    });
+
+    continueBtn.addEventListener('click', () => {
+      // Visionstexte sind schon gesetzt
+      showOnly(welcomeView);
+    });
+
+    startButton.addEventListener('click', () => renderQuestion());
+    backButton.addEventListener('click', back);
+    nextButton.addEventListener('click', next);
+    restartButton.addEventListener('click', restart);
+    reviewAnswersBtn.addEventListener('click', reviewAnswers);
+
+    // Pfeiltasten
+    document.addEventListener('keydown', (e) => {
+      const inQuestions = !questionsView.classList.contains('hidden');
+      if (!inQuestions) return;
+      if (e.key === 'ArrowRight' && !nextButton.disabled) next();
+      if (e.key === 'ArrowLeft' && !backButton.classList.contains('hidden')) back();
+    });
+
+    // Startansicht
+    showOnly(modeView);
+  </script>
 </body>
 </html>
