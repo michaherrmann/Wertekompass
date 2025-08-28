@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethik- und Werte-Kompass</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div id="app" class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 sm:p-8 space-y-6 flex flex-col justify-between transform transition-all duration-300">
+        <!-- Willkommens-Ansicht -->
+        <div id="welcome-view" class="text-center">
+            <div class="mb-6">
+                <i class="fas fa-compass text-6xl text-blue-600 mb-4"></i>
+                <h1 class="text-3xl font-bold text-gray-800">Ethik- & Werte-Kompass</h1>
+            </div>
+            <p class="text-gray-600 mb-6">
+                Beantworte einige Fragen zu einem digitalen Produkt, um seine Auswirkungen auf dich und dein Umfeld besser zu verstehen.
+            </p>
+            <button id="start-button" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                Starten
+            </button>
+        </div>
+
+        <!-- Fragen-Ansicht -->
+        <div id="questions-view" class="hidden flex-1 flex flex-col justify-between">
+            <div>
+                <div id="progress-container" class="w-full bg-gray-200 rounded-full h-2.5 mb-6 overflow-hidden">
+                    <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-in-out" style="width: 0%;"></div>
+                </div>
+                <div class="mb-6">
+                    <p id="question-text" class="text-xl font-semibold text-gray-700 mb-4"></p>
+                    <div id="options-container" class="space-y-4">
+                        <!-- Optionen werden hier von JavaScript eingefügt -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between space-x-4 mt-6">
+                <button id="back-button" class="flex-1 bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-xl hover:bg-gray-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
+                    Zurück
+                </button>
+                <button id="next-button" class="flex-1 bg-blue-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                    Weiter
+                </button>
+            </div>
+        </div>
+
+        <!-- Ergebnisse-Ansicht -->
+        <div id="results-view" class="hidden text-center">
+            <div class="mb-6">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Dein Kompass-Ergebnis</h2>
+                <div id="score-ring" class="relative w-40 h-40 mx-auto mb-4">
+                    <!-- Der Kreis für die Punktzahl wird hier von JavaScript gerendert -->
+                    <svg class="w-full h-full transform -rotate-90">
+                        <circle class="text-gray-200" stroke-width="12" stroke="currentColor" fill="transparent" r="70" cx="80" cy="80"></circle>
+                        <circle id="score-circle" class="text-blue-600 transition-all duration-700 ease-in-out" stroke-width="12" stroke="currentColor" fill="transparent" r="70" cx="80" cy="80"></circle>
+                    </svg>
+                    <span id="score-text" class="absolute inset-0 flex items-center justify-center text-4xl font-bold text-gray-800"></span>
+                </div>
+                <p id="result-text" class="text-lg font-semibold"></p>
+            </div>
+            <button id="restart-button" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                Neuer Check
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Haupt-JavaScript-Logik für die App
+        
+        // Konstanten für die HTML-Elemente
+        const app = document.getElementById('app');
+        const welcomeView = document.getElementById('welcome-view');
+        const questionsView = document.getElementById('questions-view');
+        const resultsView = document.getElementById('results-view');
+        const startButton = document.getElementById('start-button');
+        const backButton = document.getElementById('back-button');
+        const nextButton = document.getElementById('next-button');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const progressBar = document.getElementById('progress-bar');
+        const scoreCircle = document.getElementById('score-circle');
+        const scoreText = document.getElementById('score-text');
+        const resultText = document.getElementById('result-text');
+        const restartButton = document.getElementById('restart-button');
+
+        // Die Fragen für den Kompass
+        // Jede Frage hat eine ID, den Text und Optionen mit Werten.
+        const questions = [
+            {
+                id: 'question1',
+                text: 'Was ist der Hauptzweck dieser App für mich?',
+                options: [
+                    { value: 1, text: 'Es unterhält mich nur.', score: 1 },
+                    { value: 2, text: 'Es erleichtert mein Leben ein wenig.', score: 2 },
+                    { value: 3, text: 'Es hilft mir, produktiver zu sein.', score: 3 },
+                    { value: 4, text: 'Es bringt mir echtes Wissen oder Fähigkeiten bei.', score: 4 },
+                    { value: 5, text: 'Es verbessert meine Lebensqualität nachhaltig.', score: 5 }
+                ]
+            },
+            {
+                id: 'question2',
+                text: 'Wie beeinflusst die App meine zwischenmenschlichen Beziehungen?',
+                options: [
+                    { value: 1, text: 'Sie isoliert mich von Freunden und Familie.', score: 1 },
+                    { value: 2, text: 'Sie lenkt mich von persönlichen Gesprächen ab.', score: 2 },
+                    { value: 3, text: 'Sie hat keinen Einfluss auf meine Beziehungen.', score: 3 },
+                    { value: 4, text: 'Sie ermöglicht neue Wege, um in Kontakt zu bleiben.', score: 4 },
+                    { value: 5, text: 'Sie stärkt meine Beziehungen und mein Miteinander.', score: 5 }
+                ]
+            },
+            {
+                id: 'question3',
+                text: 'Macht mich die App eher abhängig oder gibt sie mir Kontrolle?',
+                options: [
+                    { value: 1, text: 'Sie macht mich süchtig und ich brauche sie ständig.', score: 1 },
+                    { value: 2, text: 'Ich fühle mich gezwungen, sie regelmäßig zu nutzen.', score: 2 },
+                    { value: 3, text: 'Ich nutze sie, wenn ich sie brauche, ohne Druck.', score: 3 },
+                    { value: 4, text: 'Sie hilft mir, meine Zeit besser zu planen und zu verwalten.', score: 4 },
+                    { value: 5, text: 'Sie stärkt meine Autonomie und Selbstkontrolle.', score: 5 }
+                ]
+            },
+            {
+                id: 'question4',
+                text: 'Wie transparent ist die App in Bezug auf meine Daten?',
+                options: [
+                    { value: 1, text: 'Ich weiß nicht, was mit meinen Daten passiert.', score: 1 },
+                    { value: 2, text: 'Die Datenschutzbestimmungen sind unklar und kompliziert.', score: 2 },
+                    { value: 3, text: 'Die App sammelt einige Daten, aber das ist akzeptabel.', score: 3 },
+                    { value: 4, text: 'Ich kann meine Daten leicht einsehen und löschen.', score: 4 },
+                    { value: 5, text: 'Sie respektiert meine Privatsphäre vollständig.', score: 5 }
+                ]
+            }
+        ];
+
+        // Zustandsvariablen für die App
+        let currentQuestionIndex = 0;
+        let answers = {};
+        const totalQuestions = questions.length;
+        const totalScoreMax = totalQuestions * 5;
+
+        // Funktionen zum Verwalten der Ansichten
+        const showView = (view) => {
+            welcomeView.classList.add('hidden');
+            questionsView.classList.add('hidden');
+            resultsView.classList.add('hidden');
+            view.classList.remove('hidden');
+        };
+
+        // Funktion zum Anzeigen der aktuellen Frage
+        const displayQuestion = () => {
+            // Zeige die Fragen-Ansicht, wenn sie nicht sichtbar ist
+            showView(questionsView);
+
+            // Hol die aktuelle Frage
+            const currentQuestion = questions[currentQuestionIndex];
+            questionText.textContent = currentQuestion.text;
+            optionsContainer.innerHTML = ''; // Entferne vorherige Optionen
+
+            // Erstelle die Optionen dynamisch
+            currentQuestion.options.forEach(option => {
+                const label = document.createElement('label');
+                label.className = 'flex items-center p-4 bg-gray-100 rounded-lg cursor-pointer transition-colors duration-200 hover:bg-gray-200';
+                
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = `question-${currentQuestion.id}`;
+                radio.value = option.value;
+                radio.className = 'form-radio h-5 w-5 text-blue-600 transition-colors duration-200 focus:ring-blue-500 focus:ring-opacity-50';
+                
+                const span = document.createElement('span');
+                span.className = 'ml-3 text-gray-700 font-medium';
+                span.textContent = option.text;
+
+                // Lade die vorherige Antwort, falls vorhanden
+                if (answers[currentQuestion.id] === option.value) {
+                    radio.checked = true;
+                }
+
+                label.appendChild(radio);
+                label.appendChild(span);
+                optionsContainer.appendChild(label);
+            });
+
+            // Aktualisiere den Fortschrittsbalken
+            const progress = (currentQuestionIndex / totalQuestions) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            // Aktualisiere die Buttons
+            backButton.classList.toggle('hidden', currentQuestionIndex === 0);
+            nextButton.textContent = currentQuestionIndex === totalQuestions - 1 ? 'Ergebnis anzeigen' : 'Weiter';
+        };
+
+        // Funktion zum Speichern der Antwort und zum Navigieren
+        const handleNext = () => {
+            const currentQuestion = questions[currentQuestionIndex];
+            const selectedOption = document.querySelector(`input[name="question-${currentQuestion.id}"]:checked`);
+            
+            if (!selectedOption) {
+                // Zeige eine Fehlermeldung, wenn keine Option ausgewählt ist
+                // Anstelle von alert() zeigen wir eine temporäre Nachricht
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'mt-4 text-red-500 text-sm text-center';
+                errorDiv.textContent = 'Bitte wähle eine Option aus, um fortzufahren.';
+                optionsContainer.appendChild(errorDiv);
+                setTimeout(() => errorDiv.remove(), 3000); // Entferne die Nachricht nach 3 Sekunden
+                return;
+            }
+
+            // Speichere die Antwort
+            answers[currentQuestion.id] = parseInt(selectedOption.value);
+            
+            if (currentQuestionIndex < totalQuestions - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            } else {
+                displayResults();
+            }
+        };
+
+        // Funktion zur Navigation zurück
+        const handleBack = () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        };
+
+        // Funktion zum Anzeigen der Ergebnisse
+        const displayResults = () => {
+            // Berechne die Gesamtpunktzahl
+            let totalScore = 0;
+            for (const questionId in answers) {
+                const question = questions.find(q => q.id === questionId);
+                const option = question.options.find(opt => opt.value === answers[questionId]);
+                if (option) {
+                    totalScore += option.score;
+                }
+            }
+            
+            const scorePercentage = Math.round((totalScore / totalScoreMax) * 100);
+
+            // Zeige die Ergebnisse-Ansicht
+            showView(resultsView);
+            
+            // Setze die Ergebnisse in der UI
+            scoreText.textContent = `${scorePercentage}%`;
+
+            // Animiere den Fortschrittskreis
+            const circumference = 2 * Math.PI * 70; // 70 ist der Radius
+            scoreCircle.style.strokeDasharray = circumference;
+            scoreCircle.style.strokeDashoffset = circumference - (scorePercentage / 100) * circumference;
+
+            // Setze den Ergebnistext basierend auf der Punktzahl
+            if (scorePercentage >= 80) {
+                resultText.textContent = 'Sehr gute Werte-Ausrichtung! Dieses Produkt scheint mit deinen humanistischen Prinzipien im Einklang zu stehen.';
+                resultText.className = 'text-green-600 font-semibold';
+            } else if (scorePercentage >= 60) {
+                resultText.textContent = 'Gute Werte-Ausrichtung. Das Produkt hat viele positive Seiten, aber es ist gut, einige Punkte im Auge zu behalten.';
+                resultText.className = 'text-yellow-600 font-semibold';
+            } else if (scorePercentage >= 40) {
+                resultText.textContent = 'Mäßige Werte-Ausrichtung. Eine kritische Reflexion ist hier angebracht, um die negativen Aspekte zu minimieren.';
+                resultText.className = 'text-orange-600 font-semibold';
+            } else {
+                resultText.textContent = 'Achtung! Dieses Produkt könnte einige Herausforderungen für deine Werte darstellen. Sei sehr achtsam beim Gebrauch.';
+                resultText.className = 'text-red-600 font-semibold';
+            }
+        };
+
+        // Funktion zum Neustarten der App
+        const handleRestart = () => {
+            currentQuestionIndex = 0;
+            answers = {};
+            showView(welcomeView);
+        };
+
+        // Event-Listener
+        startButton.addEventListener('click', displayQuestion);
+        nextButton.addEventListener('click', handleNext);
+        backButton.addEventListener('click', handleBack);
+        restartButton.addEventListener('click', handleRestart);
+
+        // Initialisiere die App auf der Willkommens-Ansicht
+        showView(welcomeView);
+    </script>
+
+</body>
+</html>
